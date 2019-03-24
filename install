@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+target_dotfiles="${HOME}/.dotfiles-readline"
+source_dotfiles='https://github.com/adrfer/dotfiles-readline.git'
+
+target_inputrc="${HOME}/.inputrc"
+source_inputrc="${target_dotfiles}/inputrc"
+
+# Bail if git cannot be found
+if ! command -v 'git' >/dev/null; then
+    echo -n 'Ooops, git not found.'
+    exit 1
+fi
+
+# Backup existing files, if any
+echo -n 'Backing up existing readline files...'
+
+if [[ -d "${target_dotfiles}" ]]; then
+    mv -f "${target_dotfiles}"{,"$(date '+ %F at %H.%M.%S %p')"}
+fi
+
+if [[ -f "${target_inputrc}" ]]; then
+    mv -f "${target_inputrc}"{,"$(date '+ %F at %H.%M.%S %p')"}
+fi
+
+echo ' done.'
+
+# Download new files
+echo -n 'Downloading some readline badassery...'
+
+if git clone "${source_dotfiles}" "${target_dotfiles}" >/dev/null 2>&1; then
+  echo ' done.'
+else
+  echo
+  echo "Ooops, unable to access ${source_dotfiles}, try again."
+  exit 1
+fi
+
+# Setup existing and new files
+echo -n 'Setting up your readline configuration...'
+ln -sf "${source_inputrc}" "${target_inputrc}"
+echo ' done.'
+
+# Return successfully, just in case
+echo 'All good, enjoy!'
+exit 0

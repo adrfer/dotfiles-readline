@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+target_dotfiles="${HOME}/.dotfiles-readline"
+target_inputrc="${HOME}/.inputrc"
+
+# Confirm or abort uninstall
+read -r -p 'Sure to uninstall (y/n [n])? '
+
+if [[ ! "${REPLY}" =~ ^[Yy]$ ]]; then
+    echo 'Ok then, nothing much to see here.'
+    exit 0
+fi
+
+# Remove existing files, if any
+echo -n 'Removing existing readline files...'
+
+if [[ -d "${target_dotfiles}" ]]; then
+    rm -rf "${target_dotfiles}"
+fi
+
+if [[ -L "${target_inputrc}" ]]; then
+    rm -f "${target_inputrc}"
+fi
+
+echo ' done.'
+
+# Restore latest backup, if any
+read -r -p 'Check for backups? (y/n [n])? '
+
+if [[ ! "${REPLY}" =~ ^[Yy]$ ]]; then
+    echo 'All good and clean... farewell.'
+    exit 0
+fi
+
+backed_up_dotfiles=$(find "${HOME}" -maxdepth 1 -type d -name '.dotfiles-readline *' | sort -r | head -n1)
+backed_up_inputrc=$(find "${HOME}" -maxdepth 1 -type f -name '.inputrc *' | sort -r | head -n1)
+
+if [[ ! -n "${backed_up_dotfiles}" &&  ! -n "${backed_up_inputrc}" ]]; then
+    echo 'Oops, no backups found... sorry.'
+    echo 'All good and clean... farewell.'
+    exit 0
+fi
+
+echo -n 'Restoring backup...'
+
+if [[ -n "${backed_up_dotfiles}" ]]; then
+    mv -f "${backed_up_dotfiles}" "${target_dotfiles}"
+fi
+
+if [[ -n "${backed_up_inputrc}" ]]; then
+    mv -f "${backed_up_inputrc}" "${target_inputrc}"
+fi
+
+echo ' done.'
+
+# Return successfully, just in case
+echo 'All good and clean... farewell.'
+exit 0

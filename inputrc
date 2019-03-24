@@ -1,0 +1,19 @@
+# Re-read this file with C-x C-r
+
+# Perform filename matching and completion in a case-insensitive fashion
+set completion-ignore-case on
+
+# Treat hyphens and underscores as equivalent when performing filename matching and completion
+set completion-map-case on
+
+# Append a slash to completed names which are symbolic links to directories
+set mark-symlinked-directories on
+
+# Match hidden files when performing filename completion
+set match-hidden-files on
+
+# List filename matching and completion after pressing tab just once
+set show-all-if-ambiguous on
+
+# Append a character denoting a file's type to the filename when listing possible completions
+set visible-stats on
